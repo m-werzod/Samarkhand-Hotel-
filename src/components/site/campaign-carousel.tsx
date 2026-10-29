@@ -174,7 +174,7 @@ export function CampaignCarousel({
                 size="iconSm"
                 onClick={togglePlay}
                 aria-label={
-                  playing ? 'Avtomatik aylanishni toК»xtatish' : 'Avtomatik aylanishni yoqish'
+                  playing ? 'Avtomatik aylanishni toʻxtatish' : 'Avtomatik aylanishni yoqish'
                 }
               >
                 {playing ? <Pause aria-hidden="true" /> : <Play aria-hidden="true" />}

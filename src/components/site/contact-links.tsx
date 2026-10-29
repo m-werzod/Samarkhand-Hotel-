@@ -88,7 +88,7 @@ export function buildContactChannels(settings: HotelSettings): ContactChannel[] 
   if (settings.address.mapsUrl) {
     channels.push({
       key: 'map',
-      label: 'Xaritada koК»rish',
+      label: 'Xaritada koʻrish',
       href: settings.address.mapsUrl,
       icon: MapPin,
       external: true,
