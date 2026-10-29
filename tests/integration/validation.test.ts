@@ -301,6 +301,20 @@ describe('campaign input', () => {
     expect(
       campaignInputSchema.safeParse({ ...valid, ctaHref: null }).success,
     ).toBe(false);
+    expect(
+      campaignInputSchema.safeParse({ ...valid, ctaHref: '   ' }).success,
+    ).toBe(false);
+  });
+
+  it('accepts an empty CTA when there is no button label', () => {
+    // A browser submits "" for an untouched optional field. Treating that as
+    // an invalid URL made it impossible to save a campaign without a CTA.
+    expect(
+      campaignInputSchema.safeParse({ ...valid, ctaLabel: null, ctaHref: '' }).success,
+    ).toBe(true);
+    expect(
+      campaignInputSchema.safeParse({ ...valid, ctaLabel: '', ctaHref: '' }).success,
+    ).toBe(true);
   });
 
   it('rejects a slide with neither media nor a title', () => {

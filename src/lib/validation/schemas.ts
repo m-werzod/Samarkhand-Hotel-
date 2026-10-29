@@ -84,8 +84,18 @@ export const freeTextSchema = (max: number, label: string) =>
       message: 'Matnda ruxsat etilmagan belgilar bor.',
     });
 
-/** A site-relative path or allowlisted https URL, for CMS-controlled links. */
+/**
+ * A site-relative path or allowlisted https URL, for CMS-controlled links.
+ *
+ * An empty string passes: a browser submits `""` for an untouched optional
+ * field, and the CTA is genuinely optional. "Set but unsafe" and "not set"
+ * are different states, and only the first is an error. The campaign schema
+ * separately requires an href whenever a button label is present, so an empty
+ * value can never produce a button that goes nowhere.
+ */
 export const ctaHrefSchema = z.string().trim().superRefine((value, ctx) => {
+  if (value.length === 0) return;
+
   const result = validateCtaHref(value);
   if (!result.ok) {
     ctx.addIssue({
@@ -353,7 +363,7 @@ export const campaignInputSchema = z
     message: 'Slayd uchun rasm yoki sarlavha kerak.',
     path: ['mediaId'],
   })
-  .refine((data) => !data.ctaLabel || Boolean(data.ctaHref), {
+  .refine((data) => !data.ctaLabel || Boolean(data.ctaHref?.trim()), {
     message: 'Tugma matni kiritilgan boʻlsa, havola ham kerak.',
     path: ['ctaHref'],
   });

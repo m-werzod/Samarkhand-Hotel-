@@ -184,6 +184,7 @@ export function CampaignForm({
           </p>
 
           <MediaPicker
+            testId="campaign-desktop-media"
             label="Desktop tasvir (gorizontal)"
             media={media}
             value={values.mediaId ?? null}
@@ -196,6 +197,7 @@ export function CampaignForm({
           ) : null}
 
           <MediaPicker
+            testId="campaign-mobile-media"
             label="Mobil tasvir (vertikal)"
             media={media}
             value={values.mobileMediaId ?? null}
@@ -512,15 +514,18 @@ function MediaPicker({
   value,
   onChange,
   className,
+  testId,
 }: {
   label: string;
   media: MediaAsset[];
   value: string | null;
   onChange: (id: string | null) => void;
   className?: string;
+  /** Lets the end-to-end suite target one picker unambiguously. */
+  testId?: string;
 }) {
   return (
-    <div className={className}>
+    <div className={className} data-testid={testId}>
       <p className="mb-2 mt-4 text-sm font-medium text-chocolate-700">{label}</p>
       <ul className="grid grid-cols-3 gap-2 sm:grid-cols-4">
         <li>
