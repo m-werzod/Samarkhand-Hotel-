@@ -117,26 +117,63 @@ export function fromMajorUnits(
  * UZS is rendered as `1 250 000 so'm` — the local convention places the unit
  * after the figure, and Intl's narrow symbol for UZS is not widely recognised.
  */
+/**
+ * Group digits with a chosen separator.
+ *
+ * Done by hand rather than through `Intl.NumberFormat` because the two must
+ * agree byte-for-byte between the Node server and the browser. Locale data
+ * for `uz-UZ` differs between runtimes, and a one-character difference in a
+ * price is a hydration mismatch that makes React throw away the tree.
+ */
+function groupDigits(whole: string, separator: string): string {
+  const negative = whole.startsWith('-');
+  const digits = negative ? whole.slice(1) : whole;
+  let out = '';
+  for (let i = 0; i < digits.length; i += 1) {
+    if (i > 0 && (digits.length - i) % 3 === 0) out += separator;
+    out += digits[i];
+  }
+  return negative ? `-${out}` : out;
+}
+
+/** Separators per currency: UZS groups with a non-breaking space. */
+const SEPARATORS: Record<CurrencyCode, { group: string; decimal: string }> = {
+  UZS: { group: ' ', decimal: ',' },
+  USD: { group: ',', decimal: '.' },
+  EUR: { group: '.', decimal: ',' },
+};
+
 export function formatMoney(
   value: Money,
-  options: { locale?: string; compact?: boolean; showCurrency?: boolean } = {},
+  options: { compact?: boolean; showCurrency?: boolean } = {},
 ): string {
   const config = CURRENCY_CONFIG[value.currency];
-  const locale = options.locale ?? config.locale;
+  const separators = SEPARATORS[value.currency];
   const amount = toMajorUnits(value);
 
-  const formatted = new Intl.NumberFormat(locale, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: config.minorUnits,
-    ...(options.compact && Math.abs(amount) >= 1_000_000
-      ? { notation: 'compact' as const, maximumFractionDigits: 1 }
-      : {}),
-  }).format(amount);
+  let formatted: string;
+
+  if (options.compact && Math.abs(amount) >= 1_000_000) {
+    const millions = amount / 1_000_000;
+    const rounded = Math.round(millions * 10) / 10;
+    const text = Number.isInteger(rounded)
+      ? String(rounded)
+      : String(rounded).replace('.', separators.decimal);
+    formatted = `${text} mln`;
+  } else {
+    const fixed = Math.abs(amount).toFixed(config.minorUnits);
+    const [whole = '0', fraction] = fixed.split('.');
+    const grouped = groupDigits(whole, separators.group);
+    const sign = amount < 0 ? '-' : '';
+    formatted = fraction
+      ? `${sign}${grouped}${separators.decimal}${fraction}`
+      : `${sign}${grouped}`;
+  }
 
   if (options.showCurrency === false) return formatted;
 
   return value.currency === 'UZS'
-    ? `${formatted} ${config.symbol}`
+    ? `${formatted} ${config.symbol}`
     : `${config.symbol}${formatted}`;
 }
 

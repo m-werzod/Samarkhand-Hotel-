@@ -202,12 +202,43 @@ const LOCALE_TAGS: Record<string, string> = {
   en: 'en-GB',
 };
 
+/**
+ * Uzbek month names, written out rather than taken from Intl.
+ *
+ * Node's bundled ICU has no short-month data for `uz-UZ` and falls back to
+ * "M10", while browsers render "okt". That mismatch is a real hydration
+ * error, not a cosmetic one — React discards and re-renders the tree. A
+ * literal table is both correct Uzbek and identical on every runtime.
+ */
+const UZ_MONTHS_LONG = [
+  'yanvar', 'fevral', 'mart', 'aprel', 'may', 'iyun',
+  'iyul', 'avgust', 'sentabr', 'oktabr', 'noyabr', 'dekabr',
+] as const;
+
+const UZ_MONTHS_SHORT = [
+  'yan', 'fev', 'mar', 'apr', 'may', 'iyn',
+  'iyl', 'avg', 'sen', 'okt', 'noy', 'dek',
+] as const;
+
 export function formatDateForDisplay(
   date: CalendarDate,
   locale: string,
   options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long' },
 ): string {
-  return new Intl.DateTimeFormat(LOCALE_TAGS[locale] ?? 'uz-UZ', {
+  if (locale === 'uz') {
+    const parsed = parseCalendarDate(date);
+    const day = parsed.getUTCDate();
+    const monthIndex = parsed.getUTCMonth();
+    const month =
+      options.month === 'short'
+        ? UZ_MONTHS_SHORT[monthIndex]
+        : UZ_MONTHS_LONG[monthIndex];
+    // Uzbek writes the day first, joined with a hyphen: "30-oktabr".
+    const base = `${day}-${month}`;
+    return options.year ? `${base} ${parsed.getUTCFullYear()}` : base;
+  }
+
+  return new Intl.DateTimeFormat(LOCALE_TAGS[locale] ?? 'en-GB', {
     ...options,
     timeZone: 'UTC',
   }).format(parseCalendarDate(date));
