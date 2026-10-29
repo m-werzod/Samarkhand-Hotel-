@@ -206,13 +206,37 @@ export async function signIn(
   );
 
   const store = await cookies();
-  store.set(
-    SESSION_COOKIE,
-    token,
-    sessionCookieOptions(process.env.NODE_ENV === 'production'),
-  );
+  store.set(SESSION_COOKIE, token, sessionCookieOptions(await isSecureRequest()));
 
   return { ok: true };
+}
+
+/**
+ * Is this request actually being served over HTTPS?
+ *
+ * Determined from the request rather than from `NODE_ENV`. A production build
+ * served over plain HTTP — which is exactly what the end-to-end suite and a
+ * local `npm start` do — would otherwise set `Secure` on the session cookie,
+ * and the browser would silently drop it. The symptom is a login that appears
+ * to succeed and then does nothing.
+ *
+ * `x-forwarded-proto` is set by the platform edge (Vercel sets it and strips
+ * any client-supplied value). Falling back to `false` is the safe direction:
+ * it may omit `Secure` on an unusual proxy, never add it where the browser
+ * would reject the cookie outright.
+ */
+async function isSecureRequest(): Promise<boolean> {
+  const { headers } = await import('next/headers');
+  const requestHeaders = await headers();
+
+  const forwardedProto = requestHeaders.get('x-forwarded-proto');
+  if (forwardedProto) {
+    return forwardedProto.split(',')[0]?.trim() === 'https';
+  }
+
+  // No proxy header: trust the origin the browser reported.
+  const origin = requestHeaders.get('origin') ?? requestHeaders.get('referer');
+  return Boolean(origin?.startsWith('https://'));
 }
 
 export async function signOut(): Promise<void> {
