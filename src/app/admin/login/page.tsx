@@ -1,4 +1,6 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
+
+import Link from 'next/link';
 
 import { LoginForm } from '@/components/admin/login-form';
 import { Logo } from '@/components/site/logo';
@@ -71,9 +73,7 @@ export default async function AdminLoginPage({
         </div>
 
         <p className="mt-6 text-center text-xs text-ivory-100/50">
-          <a href="/" className="underline underline-offset-2 hover:text-ivory-100/80">
-            Saytga qaytish
-          </a>
+          <Link href="/" className="underline underline-offset-2 hover:text-ivory-100/80">Saytga qaytish</Link>
         </p>
       </div>
     </main>

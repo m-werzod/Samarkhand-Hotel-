@@ -11,6 +11,15 @@ export const metadata: Metadata = {
 };
 
 /**
+ * Every admin page is rendered per request.
+ *
+ * Without this Next would try to prerender them at build time, where there is
+ * no session — and a statically cached admin page is a cached view of one
+ * operator's data served to the next.
+ */
+export const dynamic = 'force-dynamic';
+
+/**
  * Admin layout.
  *
  * Checks the session here as well as in the middleware. The middleware can be

@@ -18,7 +18,6 @@ import {
   getRoomsWithPricing,
   getSettings,
 } from '@/lib/data/queries';
-import { getStore } from '@/lib/data';
 import { formatMoney, formatMoneyPlain } from '@/lib/domain/money';
 import { calculateStayPrice, displayPriceForRoom } from '@/lib/domain/pricing';
 import { nightsBetween } from '@/lib/domain/dates';
@@ -27,10 +26,14 @@ import { getSiteUrl } from '@/lib/env';
 type Params = { slug: string };
 type Search = Record<string, string | string[] | undefined>;
 
-export async function generateStaticParams(): Promise<Params[]> {
-  const rooms = await getStore().listRooms({ statuses: ['published'] });
-  return rooms.map((room) => ({ slug: room.slug }));
-}
+/*
+ * Deliberately no `generateStaticParams`.
+ *
+ * Prerendering room pages would bake the price, description and availability
+ * language at build time, and a page config like that overrides the layout's
+ * `force-dynamic`. An administrator changing a nightly rate expects the room
+ * page to say so, so these render per request like the rest of the site.
+ */
 
 export async function generateMetadata({
   params,
