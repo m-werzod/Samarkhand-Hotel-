@@ -1,10 +1,11 @@
-'use client';
+﻿'use client';
 
 import * as React from 'react';
 import { Mail, MapPin, MessageCircle, Phone, Send } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { trackEvent } from '@/lib/analytics/client';
+import { formatPhoneForDisplay, toTelHref, toWhatsAppDigits } from '@/lib/domain/contact';
 import { cn } from '@/lib/utils';
 import type { HotelSettings } from '@/lib/domain/types';
 
@@ -36,7 +37,7 @@ export function buildContactChannels(settings: HotelSettings): ContactChannel[] 
     channels.push({
       key: 'phone',
       label: formatPhoneForDisplay(settings.phone),
-      href: `tel:${settings.phone}`,
+      href: toTelHref(settings.phone),
       icon: Phone,
       external: false,
     });
@@ -54,7 +55,7 @@ export function buildContactChannels(settings: HotelSettings): ContactChannel[] 
 
   if (settings.whatsappNumber) {
     // wa.me requires digits only, no leading plus.
-    const digits = settings.whatsappNumber.replace(/\D/g, '');
+    const digits = toWhatsAppDigits(settings.whatsappNumber);
     channels.push({
       key: 'whatsapp',
       label: 'WhatsApp',
@@ -87,7 +88,7 @@ export function buildContactChannels(settings: HotelSettings): ContactChannel[] 
   if (settings.address.mapsUrl) {
     channels.push({
       key: 'map',
-      label: 'Xaritada koʻrish',
+      label: 'Xaritada koК»rish',
       href: settings.address.mapsUrl,
       icon: MapPin,
       external: true,
@@ -118,15 +119,6 @@ function InstagramGlyph(props: React.SVGProps<SVGSVGElement>) {
       <circle cx="17.6" cy="6.4" r="1.1" fill="currentColor" stroke="none" />
     </svg>
   );
-}
-
-/** +998901234567 -> +998 90 123 45 67 */
-export function formatPhoneForDisplay(raw: string): string {
-  const digits = raw.replace(/\D/g, '');
-  if (digits.startsWith('998') && digits.length === 12) {
-    return `+998 ${digits.slice(3, 5)} ${digits.slice(5, 8)} ${digits.slice(8, 10)} ${digits.slice(10)}`;
-  }
-  return raw;
 }
 
 export function ContactChannelButtons({

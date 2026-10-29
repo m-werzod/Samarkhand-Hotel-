@@ -1,8 +1,9 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 import { Mail, MapPin, Phone } from 'lucide-react';
 
 import { Logo } from '@/components/site/logo';
-import { ContactIconRow, formatPhoneForDisplay } from '@/components/site/contact-links';
+import { ContactIconRow } from '@/components/site/contact-links';
+import { formatPhoneForDisplay, toTelHref } from '@/lib/domain/contact';
 import { DemoBadge } from '@/components/ui/surface';
 import { getDictionary } from '@/lib/i18n/dictionaries';
 import type { HotelSettings, SiteContent } from '@/lib/domain/types';
@@ -119,7 +120,7 @@ export function SiteFooter({
               <p className="flex items-center gap-2.5">
                 <Phone className="size-4 shrink-0 text-gold-400" aria-hidden="true" />
                 <a
-                  href={`tel:${settings.phone}`}
+                  href={toTelHref(settings.phone)}
                   className="transition-colors hover:text-gold-300"
                 >
                   {formatPhoneForDisplay(settings.phone)}
@@ -137,7 +138,7 @@ export function SiteFooter({
             </address>
 
             <p className="mt-4 text-xs leading-relaxed text-ivory-100/55">
-              Qabul: {settings.checkInTime} · Chiqish: {settings.checkOutTime}
+              Qabul: {settings.checkInTime} В· Chiqish: {settings.checkOutTime}
             </p>
           </div>
         </div>
@@ -152,15 +153,15 @@ export function SiteFooter({
             <DemoBadge label="Demo" />
             <p className="text-xs leading-relaxed text-ivory-100/80">
               Ushbu saytdagi manzil, telefon raqami, narxlar va sharhlar namuna
-              maʼlumotlar. Ular mehmonxona maʼmuri tomonidan haqiqiy maʼlumotlar
-              bilan almashtirilishi kerak. Tasvirlar — kontseptual illyustratsiyalar.
+              maКјlumotlar. Ular mehmonxona maКјmuri tomonidan haqiqiy maКјlumotlar
+              bilan almashtirilishi kerak. Tasvirlar вЂ” kontseptual illyustratsiyalar.
             </p>
           </div>
         ) : null}
 
         <div className="mt-10 flex flex-col gap-3 border-t border-ivory-50/12 pt-6 text-xs text-ivory-100/55 sm:flex-row sm:items-center sm:justify-between">
           <p>
-            © {year} {settings.brandName}. Barcha huquqlar himoyalangan.
+            В© {year} {settings.brandName}. Barcha huquqlar himoyalangan.
           </p>
           <p>{settings.tagline}</p>
         </div>
