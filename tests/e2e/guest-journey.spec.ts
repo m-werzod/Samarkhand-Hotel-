@@ -16,11 +16,14 @@ test.describe('guest journey', () => {
     await expect(page).toHaveTitle(/Samarkhand Hotel/);
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 
-    // Both hero CTAs are present and point somewhere real.
+    // Both hero CTAs are present and point somewhere real. `.first()` because
+    // a campaign slide may legitimately carry the same call to action.
     await expect(
       page.getByRole('link', { name: /Xona bron qilish/ }).first(),
     ).toBeVisible();
-    await expect(page.getByRole('link', { name: /Xonalarni koʻrish/ })).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: /Xonalarni koʻrish/ }).first(),
+    ).toBeVisible();
 
     await expectNoHorizontalOverflow(page);
   });
@@ -48,7 +51,7 @@ test.describe('guest journey', () => {
     await page.goto(`/rooms?checkIn=${checkIn}&checkOut=${checkOut}&adults=2&children=0&rooms=1`);
     await expect(page.getByRole('heading', { name: 'Xonalarimiz' })).toBeVisible();
 
-    const firstRoom = page.getByRole('link', { name: /xona/i }).first();
+    const firstRoom = page.locator('a[href^="/rooms/"]').first();
     await firstRoom.click();
 
     await page.waitForURL(/\/rooms\/[^/?]+/);
@@ -75,7 +78,7 @@ test.describe('guest journey', () => {
 
   test('a room page shows capacity, price and a booking route', async ({ page }) => {
     await page.goto('/rooms');
-    await page.getByRole('link', { name: /xona/i }).first().click();
+    await page.locator('a[href^="/rooms/"]').first().click();
     await page.waitForURL(/\/rooms\/[^/?]+/);
 
     await expect(page.getByText(/mehmon/).first()).toBeVisible();

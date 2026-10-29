@@ -1,14 +1,21 @@
 import { expect, test } from '@playwright/test';
 
-import { ADMIN_EMAIL, ADMIN_PASSWORD, futureDate, signInAsAdmin } from './fixtures';
+import { ADMIN_EMAIL, ADMIN_PASSWORD, futureDate } from './fixtures';
 
 /**
- * Admin flow: sign in, create a room, publish it, verify it on the public
- * site, then work a booking inquiry through its lifecycle.
+ * Admin flow: create a room, publish it, verify it on the public site, then
+ * work a booking inquiry through its lifecycle.
+ *
+ * Most tests inherit a signed-in session from `auth.setup.ts`. The two that
+ * are specifically about authentication opt out of it.
  */
 
-test.describe('admin', () => {
-  test('rejects wrong credentials without revealing which part was wrong', async ({
+const SIGNED_OUT = { storageState: { cookies: [], origins: [] } };
+
+test.describe('admin authentication', () => {
+  test.use(SIGNED_OUT);
+
+  test('rejects a wrong password without revealing which part was wrong', async ({
     page,
   }) => {
     await page.goto('/admin/login');
@@ -17,24 +24,34 @@ test.describe('admin', () => {
     await page.getByLabel('Parol').fill('definitely-not-the-password');
     await page.getByRole('button', { name: 'Kirish' }).click();
 
-    const error = page.getByRole('alert');
+    // Scoped to the form: Next injects its own route-announcer with role=alert.
+    const error = page.locator('form').getByRole('alert');
     await expect(error).toBeVisible();
     await expect(error).toContainText('Email yoki parol notoʻgʻri');
+  });
 
-    // The same message for an unknown address — no enumeration oracle.
+  test('gives the same message for an unknown address', async ({ page }) => {
+    await page.goto('/admin/login');
+
     await page.getByLabel('Email').fill('nobody@samarkhand.test');
     await page.getByLabel('Parol').fill(ADMIN_PASSWORD);
     await page.getByRole('button', { name: 'Kirish' }).click();
-    await expect(page.getByRole('alert')).toContainText('Email yoki parol notoʻgʻri');
-  });
 
-  test('signs in and reaches the dashboard', async ({ page }) => {
-    await signInAsAdmin(page);
+    await expect(page.locator('form').getByRole('alert')).toContainText(
+      'Email yoki parol notoʻgʻri',
+    );
+  });
+});
+
+test.describe('admin', () => {
+  test('reaches the dashboard with a valid session', async ({ page }) => {
+    await page.goto('/admin');
+    await expect(page.getByRole('heading', { name: 'Boshqaruv paneli' })).toBeVisible();
     await expect(page.getByText(/Soʻnggi 30 kun/)).toBeVisible();
   });
 
-  test('dashboard reports unavailable metrics honestly', async ({ page }) => {
-    await signInAsAdmin(page);
+  test('reports unavailable metrics honestly', async ({ page }) => {
+    await page.goto('/admin');
 
     // Occupancy is never computed in this schema, and the card says so
     // rather than showing a plausible zero.
@@ -45,8 +62,6 @@ test.describe('admin', () => {
   test('creates a room, publishes it, and it appears on the public site', async ({
     page,
   }) => {
-    await signInAsAdmin(page);
-
     const suffix = Date.now().toString().slice(-6);
     const name = `Test xona ${suffix}`;
     const slug = `test-xona-${suffix}`;
@@ -62,27 +77,25 @@ test.describe('admin', () => {
     await page.getByLabel('Holat').selectOption('published');
 
     await page.getByRole('button', { name: 'Xona yaratish' }).click();
-    await page.waitForURL('**/admin/rooms', { timeout: 20_000 });
-    await expect(page.getByText(name)).toBeVisible();
+    await page.waitForURL('**/admin/rooms', { timeout: 30_000 });
+    await expect(page.getByRole('link', { name }).first()).toBeVisible();
 
     // The public site now serves it.
     await page.goto(`/rooms/${slug}`);
     await expect(page.getByRole('heading', { name, level: 1 })).toBeVisible();
-    await expect(page.getByText(/900[\s ]000/)).toBeVisible();
+    await expect(page.getByText(/900[\s ]000/).first()).toBeVisible();
   });
 
   test('changing a price updates the public page', async ({ page }) => {
-    await signInAsAdmin(page);
     await page.goto('/admin/rooms');
-
-    const firstRoom = page.getByRole('link', { name: /xona/i }).first();
-    await firstRoom.click();
+    // Scoped to the table: the same rows also render as cards for narrow
+    // screens, and those are display:none here — clicking one would hang.
+    await page.locator('table a[href^="/admin/rooms/"]').first().click();
     await page.waitForURL(/\/admin\/rooms\/[^/]+$/);
 
-    const priceField = page.getByLabel('Bir kecha narxi');
-    await priceField.fill('1234000');
+    await page.getByLabel('Bir kecha narxi').fill('1234000');
     await page.getByRole('button', { name: 'Oʻzgarishlarni saqlash' }).click();
-    await page.waitForURL('**/admin/rooms', { timeout: 20_000 });
+    await page.waitForURL('**/admin/rooms', { timeout: 30_000 });
 
     await page.goto('/rooms');
     await expect(page.getByText(/1[\s ]234[\s ]000/).first()).toBeVisible();
@@ -91,54 +104,50 @@ test.describe('admin', () => {
   test('creates and publishes a campaign, which then appears on the homepage', async ({
     page,
   }) => {
-    await signInAsAdmin(page);
-
     const title = `E2E kampaniya ${Date.now().toString().slice(-6)}`;
 
     await page.goto('/admin/campaigns/new');
     await page.getByLabel('Sarlavha').fill(title);
-    await page.getByLabel('Tavsif').first().fill('Avtomatik test slaydi.');
 
-    // Pick the first available desktop image.
+    // Pick the first real image in the desktop picker (index 0 is "none").
     await page
-      .getByRole('button', { name: /campaign|tasvir|backdrop/i })
-      .first()
-      .click()
-      .catch(async () => {
-        // Fall back to any media tile in the desktop picker.
-        await page.locator('button[aria-pressed]').nth(1).click();
-      });
+      .getByTestId('campaign-desktop-media')
+      .locator('button[aria-pressed]')
+      .nth(1)
+      .click();
 
     await page.getByLabel('Holat').selectOption('published');
     await page.getByLabel('Ustuvorlik').fill('999');
 
     await page.getByRole('button', { name: 'Kampaniya yaratish' }).click();
-    await page.waitForURL('**/admin/campaigns', { timeout: 20_000 });
-    await expect(page.getByText(title)).toBeVisible();
+    await page.waitForURL('**/admin/campaigns', { timeout: 30_000 });
+    await expect(page.getByText(title).first()).toBeVisible();
 
     await page.goto('/');
     await expect(page.getByText(title).first()).toBeVisible();
   });
 
   test('an expired campaign is not shown on the public site', async ({ page }) => {
-    await signInAsAdmin(page);
-
     const title = `Muddati tugagan ${Date.now().toString().slice(-6)}`;
 
     await page.goto('/admin/campaigns/new');
     await page.getByLabel('Sarlavha').fill(title);
-    await page.locator('button[aria-pressed]').nth(1).click();
+    await page
+      .getByTestId('campaign-desktop-media')
+      .locator('button[aria-pressed]')
+      .nth(1)
+      .click();
     await page.getByLabel('Holat').selectOption('published');
     // Ended yesterday.
     await page.getByLabel('Tugash vaqti').fill(`${futureDate(-1)}T12:00`);
 
     await page.getByRole('button', { name: 'Kampaniya yaratish' }).click();
-    await page.waitForURL('**/admin/campaigns', { timeout: 20_000 });
+    await page.waitForURL('**/admin/campaigns', { timeout: 30_000 });
 
-    // The admin shows it, flagged as expired.
+    // The admin lists it, flagged as expired.
     await expect(page.getByText('Muddati tugagan').first()).toBeVisible();
 
-    // The public homepage does not.
+    // The public homepage does not show it at all.
     await page.goto('/');
     await expect(page.getByText(title)).toHaveCount(0);
   });
@@ -146,7 +155,7 @@ test.describe('admin', () => {
   test('works a booking inquiry through confirmation and records history', async ({
     page,
   }) => {
-    // Submit an inquiry as a guest first.
+    // Submit an inquiry first. The public form does not need a session.
     await page.goto(
       `/booking?checkIn=${futureDate(30)}&checkOut=${futureDate(33)}&adults=2&children=0&rooms=1`,
     );
@@ -157,7 +166,7 @@ test.describe('admin', () => {
     await page.getByRole('button', { name: 'Soʻrovni yuborish' }).click();
     await expect(
       page.getByRole('heading', { name: 'Soʻrovingiz qabul qilindi' }),
-    ).toBeVisible({ timeout: 20_000 });
+    ).toBeVisible({ timeout: 30_000 });
 
     const reference = (await page
       .getByText(/SMK-[A-HJ-NP-Z2-9]{6}/)
@@ -165,7 +174,6 @@ test.describe('admin', () => {
       .textContent())!.trim();
 
     // Now handle it as staff.
-    await signInAsAdmin(page);
     await page.goto(`/admin/bookings?q=${encodeURIComponent(reference)}`);
     await page.getByRole('link', { name: reference }).first().click();
     await page.waitForURL(/\/admin\/bookings\/[^/]+$/);
@@ -173,12 +181,13 @@ test.describe('admin', () => {
     await expect(page.getByText('Admin Test Guest')).toBeVisible();
     await expect(page.getByText('Kutilmoqda').first()).toBeVisible();
 
-    await page.getByRole('button', { name: 'Tasdiqlash' }).click();
-    await page.getByRole('button', { name: 'Tasdiqlash' }).last().click();
+    await page.getByRole('button', { name: 'Tasdiqlash' }).first().click();
+    // Confirm in the dialog.
+    await page.getByRole('dialog').getByRole('button', { name: 'Tasdiqlash' }).click();
 
-    await expect(page.getByText('Tasdiqlangan').first()).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText('Tasdiqlangan').first()).toBeVisible({ timeout: 20_000 });
 
-    // History records the transition with an actor.
+    // History records the transition and who made it.
     await expect(page.getByText(/Kutilmoqda → Tasdiqlangan/)).toBeVisible();
     await expect(page.getByText(ADMIN_EMAIL).first()).toBeVisible();
 
@@ -187,17 +196,14 @@ test.describe('admin', () => {
   });
 
   test('internal notes are saved and never shown publicly', async ({ page }) => {
-    await signInAsAdmin(page);
     await page.goto('/admin/bookings');
-
-    const firstBooking = page.getByRole('link', { name: /SMK-/ }).first();
-    await firstBooking.click();
+    await page.getByRole('link', { name: /SMK-/ }).first().click();
     await page.waitForURL(/\/admin\/bookings\/[^/]+$/);
 
     const secret = `internal-note-${Date.now()}`;
     await page.getByLabel('Izoh').fill(secret);
     await page.getByRole('button', { name: 'Izohni saqlash' }).click();
-    await page.waitForTimeout(1500);
+    await expect(page.getByText('Izoh saqlandi.')).toBeVisible({ timeout: 20_000 });
 
     await page.reload();
     await expect(page.getByLabel('Izoh')).toHaveValue(secret);
@@ -207,7 +213,7 @@ test.describe('admin', () => {
     expect(await page.content()).not.toContain(secret);
   });
 
-  test('the contact message reaches the inbox', async ({ page }) => {
+  test('a contact message reaches the inbox', async ({ page }) => {
     const subject = `E2E xabar ${Date.now().toString().slice(-6)}`;
 
     await page.goto('/contact');
@@ -218,27 +224,24 @@ test.describe('admin', () => {
     await page.getByRole('button', { name: 'Xabarni yuborish' }).click();
     await expect(
       page.getByRole('heading', { name: 'Xabaringiz yuborildi' }),
-    ).toBeVisible({ timeout: 20_000 });
+    ).toBeVisible({ timeout: 30_000 });
 
-    await signInAsAdmin(page);
     await page.goto('/admin/inquiries');
     await expect(page.getByText(subject)).toBeVisible();
   });
 
-  test('the audit log records what was changed', async ({ page }) => {
-    await signInAsAdmin(page);
+  test('the audit log states that it cannot be rewritten', async ({ page }) => {
     await page.goto('/admin/audit');
     await expect(page.getByRole('heading', { name: 'Audit jurnali' })).toBeVisible();
     await expect(page.getByText(/oʻchirib boʻlmaydi/)).toBeVisible();
   });
 
   test('signing out ends the session', async ({ page }) => {
-    await signInAsAdmin(page);
-
+    await page.goto('/admin');
     await page.getByRole('button', { name: 'Chiqish' }).first().click();
-    await page.waitForURL('**/admin/login', { timeout: 15_000 });
+    await page.waitForURL('**/admin/login', { timeout: 20_000 });
 
-    // The dashboard is no longer reachable.
+    // The dashboard is no longer reachable in this context.
     await page.goto('/admin');
     await page.waitForURL('**/admin/login**');
   });

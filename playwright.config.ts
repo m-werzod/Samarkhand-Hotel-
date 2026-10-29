@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
+import { ADMIN_STATE_FILE } from './tests/e2e/fixtures';
+
 const PORT = Number(process.env.E2E_PORT ?? 3100);
 const baseURL = process.env.E2E_BASE_URL ?? `http://127.0.0.1:${PORT}`;
 
@@ -34,12 +36,29 @@ export default defineConfig({
   },
 
   projects: [
+    // Signs in once and saves the session. Everything that needs an
+    // authenticated context depends on this, so the suite does not exhaust
+    // the login rate limit it is also meant to be protected by.
+    { name: 'setup', testMatch: /auth\.setup\.ts/ },
+
     {
-      name: 'desktop-chromium',
+      name: 'public',
+      testMatch: /guest-journey\.spec\.ts/,
       use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 900 } },
     },
     {
-      name: 'mobile-chromium',
+      name: 'admin',
+      testMatch: /(admin|security|responsive)\.spec\.ts/,
+      dependencies: ['setup'],
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1280, height: 900 },
+        storageState: ADMIN_STATE_FILE,
+      },
+    },
+    {
+      name: 'mobile',
+      testMatch: /guest-journey\.spec\.ts/,
       use: { ...devices['Pixel 7'] },
     },
   ],

@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { expectNoHorizontalOverflow, futureDate, signInAsAdmin } from './fixtures';
+import { expectNoHorizontalOverflow, futureDate } from './fixtures';
 
 /**
  * Responsive behaviour.
@@ -108,7 +108,6 @@ test.describe('responsive layout', () => {
 
   test('admin tables become cards on a phone without overflowing', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await signInAsAdmin(page);
 
     for (const path of [
       '/admin',
@@ -128,7 +127,6 @@ test.describe('responsive layout', () => {
 
   test('admin forms are usable on a phone', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await signInAsAdmin(page);
 
     await page.goto('/admin/rooms/new');
     await expect(page.getByLabel('Nomi')).toBeVisible();
@@ -141,7 +139,8 @@ test.describe('responsive layout', () => {
 
   test('the admin sidebar opens and closes on a phone', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await signInAsAdmin(page);
+
+    await page.goto('/admin');
 
     const trigger = page.getByRole('button', { name: 'Menyu' });
     await expect(trigger).toBeVisible();
