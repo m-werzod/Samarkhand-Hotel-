@@ -46,3 +46,9 @@ Thumbs.db
 npm-debug.log*
 yarn-error.log*
 *.log
+
+# Added by the Vercel CLI. `.env.example` is deliberately re-included: it
+# holds variable names and descriptions only, and is part of the deliverable.
+.vercel
+.env*
+!.env.example
