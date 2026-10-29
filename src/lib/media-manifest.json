@@ -1,0 +1,167 @@
+{
+  "generatedBy": "scripts/generate-assets.mjs",
+  "note": "Original vector artwork created for this project. These are concept ILLUSTRATIONS, not photographs of a real property. Replace them with licensed photography before a real launch.",
+  "brand": [
+    "/brand/logo-primary.svg",
+    "/brand/logo-primary-on-dark.svg",
+    "/brand/logo-stacked.svg",
+    "/brand/logo-stacked-on-dark.svg",
+    "/brand/logo-mono-dark.svg",
+    "/brand/logo-mono-light.svg",
+    "/brand/logomark.svg",
+    "/brand/logomark-on-dark.svg",
+    "/brand/favicon.svg"
+  ],
+  "media": [
+    {
+      "path": "/media/exterior-dusk.svg",
+      "type": "image",
+      "kind": "illustration",
+      "category": "exterior",
+      "alt": "Samarkhand Hotel's illuminated facade at dusk, with a ribbed turquoise dome above the entrance portal",
+      "caption": "Mehmonxona tashqi ko‘rinishi — kontseptual tasvir",
+      "bytes": 20286,
+      "mimeType": "image/svg+xml"
+    },
+    {
+      "path": "/media/lobby-reception.svg",
+      "type": "image",
+      "kind": "illustration",
+      "category": "lobby",
+      "alt": "Hotel lobby with pointed arches, a long reception desk and octagonal brass pendant lamps",
+      "caption": "Qabulxona va lobbi — kontseptual tasvir",
+      "bytes": 20089,
+      "mimeType": "image/svg+xml"
+    },
+    {
+      "path": "/media/room-standard.svg",
+      "type": "image",
+      "kind": "illustration",
+      "category": "rooms",
+      "alt": "Standard room with a double bed, arched window and a carved wooden wardrobe",
+      "caption": "Standart xona — kontseptual tasvir",
+      "bytes": 10093,
+      "mimeType": "image/svg+xml"
+    },
+    {
+      "path": "/media/room-deluxe.svg",
+      "type": "image",
+      "kind": "illustration",
+      "category": "rooms",
+      "alt": "Deluxe room with a wide bed, twin arched windows, a teal armchair and framed tilework",
+      "caption": "Deluxe xona — kontseptual tasvir",
+      "bytes": 11611,
+      "mimeType": "image/svg+xml"
+    },
+    {
+      "path": "/media/room-suite.svg",
+      "type": "image",
+      "kind": "illustration",
+      "category": "rooms",
+      "alt": "Suite with a separate lounge corner, writing desk and a brass chandelier",
+      "caption": "Lyuks xona — kontseptual tasvir",
+      "bytes": 12448,
+      "mimeType": "image/svg+xml"
+    },
+    {
+      "path": "/media/bathroom.svg",
+      "type": "image",
+      "kind": "illustration",
+      "category": "amenities",
+      "alt": "Marble bathroom with a freestanding tub, arched mirror and turquoise patterned tiling",
+      "caption": "Hammom va qulayliklar — kontseptual tasvir",
+      "bytes": 21634,
+      "mimeType": "image/svg+xml"
+    },
+    {
+      "path": "/media/restaurant.svg",
+      "type": "image",
+      "kind": "illustration",
+      "category": "dining",
+      "alt": "Restaurant with candlelit tables set between lamp-lit arched niches",
+      "caption": "Restoran va nonushta zali — kontseptual tasvir",
+      "bytes": 9232,
+      "mimeType": "image/svg+xml"
+    },
+    {
+      "path": "/media/detail-tilework.svg",
+      "type": "image",
+      "kind": "illustration",
+      "category": "details",
+      "alt": "Close detail of eight-point girih stars in gold over deep turquoise",
+      "caption": "Girih naqshi — kontseptual tasvir",
+      "bytes": 44168,
+      "mimeType": "image/svg+xml"
+    },
+    {
+      "path": "/media/detail-arch.svg",
+      "type": "image",
+      "kind": "illustration",
+      "category": "details",
+      "alt": "A tall Timurid arch with muqarnas corbelling catching warm daylight",
+      "caption": "Timuriylar ravog‘i — kontseptual tasvir",
+      "bytes": 5900,
+      "mimeType": "image/svg+xml"
+    },
+    {
+      "path": "/media/campaign-autumn.svg",
+      "type": "image",
+      "kind": "illustration",
+      "category": "campaigns",
+      "alt": "Warm brown and terracotta campaign backdrop with an arch and girih motif",
+      "caption": "Kuzgi kampaniya foni",
+      "bytes": 4033,
+      "mimeType": "image/svg+xml"
+    },
+    {
+      "path": "/media/campaign-earlybird.svg",
+      "type": "image",
+      "kind": "illustration",
+      "category": "campaigns",
+      "alt": "Deep teal campaign backdrop with an arch and girih motif",
+      "caption": "Erta bron kampaniyasi foni",
+      "bytes": 4037,
+      "mimeType": "image/svg+xml"
+    },
+    {
+      "path": "/media/campaign-weekend.svg",
+      "type": "image",
+      "kind": "illustration",
+      "category": "campaigns",
+      "alt": "Espresso brown campaign backdrop with an arch and girih motif",
+      "caption": "Dam olish kunlari kampaniyasi foni",
+      "bytes": 4039,
+      "mimeType": "image/svg+xml"
+    },
+    {
+      "path": "/media/campaign-autumn-mobile.svg",
+      "type": "image",
+      "kind": "illustration",
+      "category": "campaigns",
+      "alt": "Portrait campaign backdrop in warm brown for mobile carousels",
+      "caption": "Kuzgi kampaniya foni (mobil)",
+      "bytes": 3714,
+      "mimeType": "image/svg+xml"
+    },
+    {
+      "path": "/media/campaign-earlybird-mobile.svg",
+      "type": "image",
+      "kind": "illustration",
+      "category": "campaigns",
+      "alt": "Portrait campaign backdrop in deep teal for mobile carousels",
+      "caption": "Erta bron kampaniyasi foni (mobil)",
+      "bytes": 3718,
+      "mimeType": "image/svg+xml"
+    },
+    {
+      "path": "/media/campaign-weekend-mobile.svg",
+      "type": "image",
+      "kind": "illustration",
+      "category": "campaigns",
+      "alt": "Portrait campaign backdrop in espresso brown for mobile carousels",
+      "caption": "Dam olish kunlari kampaniyasi foni (mobil)",
+      "bytes": 3720,
+      "mimeType": "image/svg+xml"
+    }
+  ]
+}
