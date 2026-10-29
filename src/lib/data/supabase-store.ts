@@ -336,7 +336,7 @@ function toContent(row: Row): SiteContent {
 }
 
 /** camelCase patch -> snake_case row, dropping undefined keys. */
-function snakeCase(patch: Record<string, unknown>): Row {
+function snakeCase(patch: object): Row {
   const out: Row = {};
   for (const [key, value] of Object.entries(patch)) {
     if (value === undefined) continue;

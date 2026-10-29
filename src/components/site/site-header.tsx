@@ -26,17 +26,15 @@ export interface NavItem {
  * background once scrolled, so the hero artwork is never clipped by a bar
  * while text stays legible the moment it would overlap.
  */
-export function SiteHeader({
-  phone,
-  transparentUntilScroll = false,
-}: {
-  phone: string;
-  transparentUntilScroll?: boolean;
-}) {
+export function SiteHeader({ phone }: { phone: string }) {
   const dict = getDictionary();
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
+
+  // Only the homepage puts artwork behind the header; everywhere else the
+  // bar is solid from the first paint.
+  const transparentUntilScroll = pathname === '/';
 
   const items: NavItem[] = [
     { href: '/rooms', label: dict.nav.rooms },
