@@ -1,15 +1,14 @@
 import Link from 'next/link';
-import { CalendarCheck, Download, Search } from 'lucide-react';
+import { CalendarCheck, Download } from 'lucide-react';
 
 import { AdminPageHeader } from '@/components/admin/admin-shell';
+import { BookingFilters } from '@/components/admin/booking-filters';
 import {
   DataTable,
   TablePagination,
-  TableToolbar,
   type Column,
 } from '@/components/admin/data-table';
 import { Button } from '@/components/ui/button';
-import { Field, Input, Select } from '@/components/ui/field';
 import { Badge, Card, EmptyState } from '@/components/ui/surface';
 import { requireRole } from '@/lib/auth';
 import { getStore } from '@/lib/data';
@@ -154,55 +153,7 @@ export default async function AdminBookingsPage({
       />
 
       <div className="p-4 sm:p-6 lg:p-8">
-        {/* Filters are a plain GET form: the result is a shareable,
-            bookmarkable URL, and it works without JavaScript. */}
-        <form method="get" action="/admin/bookings">
-          <TableToolbar>
-            <Field id="filter-q" label="Qidirish" className="sm:w-64">
-              {(aria) => (
-                <Input
-                  {...aria}
-                  name="q"
-                  defaultValue={search}
-                  placeholder="Raqam, ism, email yoki telefon"
-                />
-              )}
-            </Field>
-
-            <Field id="filter-status" label="Holat" className="sm:w-44">
-              {(aria) => (
-                <Select {...aria} name="status" defaultValue={status ?? ''}>
-                  <option value="">Barchasi</option>
-                  {BOOKING_STATUSES.map((value) => (
-                    <option key={value} value={value}>
-                      {BOOKING_STATUS_LABELS[value].uz}
-                    </option>
-                  ))}
-                </Select>
-              )}
-            </Field>
-
-            <Field id="filter-from" label="Kelish (dan)" className="sm:w-40">
-              {(aria) => <Input {...aria} type="date" name="from" defaultValue={from} />}
-            </Field>
-
-            <Field id="filter-to" label="Kelish (gacha)" className="sm:w-40">
-              {(aria) => <Input {...aria} type="date" name="to" defaultValue={to} />}
-            </Field>
-
-            <div className="flex gap-2">
-              <Button type="submit" size="md">
-                <Search aria-hidden="true" />
-                Filtrlash
-              </Button>
-              {search || status || from || to ? (
-                <Button asChild variant="ghost" size="md">
-                  <Link href="/admin/bookings">Tozalash</Link>
-                </Button>
-              ) : null}
-            </div>
-          </TableToolbar>
-        </form>
+        <BookingFilters search={search} status={status} from={from} to={to} />
 
         <DataTable
           rows={result.items}
