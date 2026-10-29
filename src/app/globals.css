@@ -1,0 +1,298 @@
+@import 'tailwindcss';
+
+/* ==========================================================================
+   Samarkhand Hotel — design tokens
+
+   Mirrors scripts/lib/palette.mjs. If you change a brand colour, change it in
+   both places or the generated artwork will drift away from the UI.
+   ========================================================================== */
+
+@theme {
+  /* --- Brand: browns ---------------------------------------------------- */
+  --color-chocolate-900: #241309;
+  --color-chocolate-800: #2e1c12;
+  --color-chocolate-700: #3b2616;
+  --color-espresso-600: #4a2f1c;
+  --color-brown-500: #6b4226;
+  --color-brown-400: #8a5a33;
+  --color-brown-300: #a9784b;
+  --color-brown-200: #c9a07a;
+
+  /* --- Brand: warm neutrals --------------------------------------------- */
+  --color-ivory-50: #fbf7f0;
+  --color-ivory-100: #f7f1e6;
+  --color-sand-200: #efe4d2;
+  --color-sand-300: #e3d5bf;
+  --color-sand-400: #d2bfa3;
+
+  /* --- Brand: accents --------------------------------------------------- */
+  --color-gold-500: #c9a227;
+  --color-gold-400: #d8b65a;
+  --color-gold-300: #e6ce8e;
+  --color-terracotta-500: #b4603c;
+  --color-terracotta-400: #c97a55;
+  --color-teal-600: #2f6b6a;
+  --color-teal-500: #3f8886;
+
+  /* --- Semantic --------------------------------------------------------- */
+  --color-success-600: #3f7d4e;
+  --color-success-100: #e4f0e6;
+  --color-warning-600: #9a6b16;
+  --color-warning-100: #faf0d9;
+  --color-danger-600: #a13a2c;
+  --color-danger-100: #f8e5e1;
+  --color-info-600: #35657f;
+  --color-info-100: #e2eef4;
+
+  /* --- Typography ------------------------------------------------------- */
+  --font-display: var(--font-cormorant), 'Hoefler Text', Georgia, serif;
+  --font-sans: var(--font-jost), 'Inter', 'Helvetica Neue', Arial, sans-serif;
+
+  /* --- Radii ------------------------------------------------------------ */
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.75rem;
+
+  /* --- Elevation: warm-tinted, never neutral grey ----------------------- */
+  --shadow-subtle: 0 1px 2px rgb(46 28 18 / 0.06), 0 1px 3px rgb(46 28 18 / 0.08);
+  --shadow-card: 0 2px 4px rgb(46 28 18 / 0.05), 0 8px 24px rgb(46 28 18 / 0.08);
+  --shadow-raised: 0 4px 8px rgb(46 28 18 / 0.07), 0 16px 40px rgb(46 28 18 / 0.12);
+  --shadow-overlay: 0 24px 64px rgb(36 19 9 / 0.26);
+
+  /* --- Layout ----------------------------------------------------------- */
+  --container-content: 76rem;
+  --container-prose: 44rem;
+
+  /* --- Motion ----------------------------------------------------------- */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+@layer base {
+  :root {
+    --focus-ring: var(--color-gold-500);
+    color-scheme: light;
+  }
+
+  * {
+    border-color: var(--color-sand-300);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  body {
+    background-color: var(--color-ivory-50);
+    color: var(--color-chocolate-800);
+    font-family: var(--font-sans);
+    font-feature-settings: 'cv11', 'ss01';
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    /* Nothing should ever cause sideways scroll on a phone. */
+    overflow-x: clip;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* A single, consistent, high-contrast focus ring everywhere. */
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Only show the ring for keyboard users, never swallow it entirely. */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  ::selection {
+    background-color: var(--color-gold-300);
+    color: var(--color-chocolate-900);
+  }
+
+  /* Form controls inherit the type stack rather than the UA default. */
+  input,
+  textarea,
+  select,
+  button {
+    font: inherit;
+    color: inherit;
+  }
+
+  /* Native date inputs: make the picker indicator visible on warm fills. */
+  input[type='date']::-webkit-calendar-picker-indicator {
+    opacity: 0.55;
+    cursor: pointer;
+  }
+  input[type='date']:hover::-webkit-calendar-picker-indicator {
+    opacity: 0.9;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   Utilities
+   ========================================================================== */
+
+@utility container-content {
+  width: 100%;
+  margin-inline: auto;
+  max-width: var(--container-content);
+  padding-inline: 1rem;
+
+  @media (width >= 40rem) {
+    padding-inline: 1.5rem;
+  }
+  @media (width >= 64rem) {
+    padding-inline: 2rem;
+  }
+}
+
+/* Horizontal scrollers (filter chips, room rails) that never leak page-wide
+   overflow and hide their scrollbar without losing keyboard access. */
+@utility scroll-rail {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overscroll-behavior-x: contain;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  & > * {
+    scroll-snap-align: start;
+    flex: none;
+  }
+}
+
+/* The warm film that sits over hero and campaign imagery so text stays
+   legible without washing the artwork out. */
+@utility media-scrim {
+  background-image: linear-gradient(
+      to top,
+      rgb(36 19 9 / 0.88) 0%,
+      rgb(36 19 9 / 0.55) 38%,
+      rgb(36 19 9 / 0.2) 68%,
+      rgb(36 19 9 / 0.35) 100%
+    );
+}
+
+@utility text-balance-pretty {
+  text-wrap: pretty;
+}
+
+/* Screen-reader-only, but focusable (skip links). */
+@utility sr-only-focusable {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+
+  &:focus-visible {
+    position: fixed;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 100;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0.75rem 1.25rem;
+    clip-path: none;
+    border-radius: var(--radius-md);
+    background-color: var(--color-chocolate-800);
+    color: var(--color-ivory-50);
+    box-shadow: var(--shadow-raised);
+  }
+}
+
+/* A subtle girih watermark for section backgrounds. Encoded inline so it
+   costs no extra request. */
+@utility girih-field {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cpath d='M40 6 46 24 64 18 54 34 72 40 54 46 64 62 46 56 40 74 34 56 16 62 26 46 8 40 26 34 16 18 34 24Z' fill='none' stroke='%236B4226' stroke-opacity='0.14' stroke-width='1.2'/%3E%3C/svg%3E");
+  background-size: 80px 80px;
+}
+
+/* ==========================================================================
+   Component-level animation
+   ========================================================================== */
+
+@keyframes samarkhand-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes samarkhand-shimmer {
+  from {
+    background-position: -200% 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
+}
+
+@utility animate-fade-up {
+  animation: samarkhand-fade-up 0.5s var(--ease-out-soft) both;
+}
+
+@utility skeleton {
+  background-image: linear-gradient(
+    90deg,
+    var(--color-sand-200) 25%,
+    var(--color-ivory-100) 50%,
+    var(--color-sand-200) 75%
+  );
+  background-size: 200% 100%;
+  animation: samarkhand-shimmer 1.4s linear infinite;
+  border-radius: var(--radius-md);
+}
