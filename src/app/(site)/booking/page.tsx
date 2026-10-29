@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 import { BookingForm } from '@/components/site/booking-form';
-import { criteriaFromParams } from '@/components/site/booking-search';
+import { criteriaFromParams } from '@/lib/domain/search-criteria';
 import { PageIntro } from '@/components/site/page-intro';
 import { EmptyState, Section } from '@/components/ui/surface';
 import { getPublishedOffers, getPublishedRooms, getSettings } from '@/lib/data/queries';

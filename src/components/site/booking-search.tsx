@@ -14,32 +14,16 @@ import {
   MAX_STAY_NIGHTS,
   addDays,
   formatDateRange,
-  nightsBetween,
   todayIn,
   validateOccupancy,
   validateStay,
 } from '@/lib/domain/dates';
+import {
+  criteriaToParams,
+  type SearchCriteria,
+} from '@/lib/domain/search-criteria';
 import { getDictionary } from '@/lib/i18n/dictionaries';
 import { cn } from '@/lib/utils';
-
-export interface SearchCriteria {
-  checkIn: string;
-  checkOut: string;
-  adults: number;
-  children: number;
-  rooms: number;
-}
-
-/** Serialise criteria into the query string the rooms page reads. */
-export function criteriaToParams(criteria: SearchCriteria): URLSearchParams {
-  return new URLSearchParams({
-    checkIn: criteria.checkIn,
-    checkOut: criteria.checkOut,
-    adults: String(criteria.adults),
-    children: String(criteria.children),
-    rooms: String(criteria.rooms),
-  });
-}
 
 /**
  * The booking search widget.
@@ -293,35 +277,4 @@ export function BookingSearch({
 
 function range(from: number, to: number): number[] {
   return Array.from({ length: to - from + 1 }, (_, i) => from + i);
-}
-
-/** Read search criteria out of a URL query string, with safe defaults. */
-export function criteriaFromParams(
-  params: Record<string, string | string[] | undefined>,
-  timeZone: string,
-): SearchCriteria {
-  const read = (key: string): string | undefined => {
-    const value = params[key];
-    return Array.isArray(value) ? value[0] : value;
-  };
-
-  const today = todayIn(timeZone);
-  const checkIn = read('checkIn') ?? addDays(today, 1);
-  const rawCheckOut = read('checkOut') ?? addDays(checkIn, 2);
-  const checkOut =
-    nightsBetween(checkIn, rawCheckOut) >= 1 ? rawCheckOut : addDays(checkIn, 1);
-
-  const toInt = (value: string | undefined, fallback: number, max: number) => {
-    const parsed = Number.parseInt(value ?? '', 10);
-    if (!Number.isFinite(parsed)) return fallback;
-    return Math.min(Math.max(parsed, 0), max);
-  };
-
-  return {
-    checkIn,
-    checkOut,
-    adults: Math.max(toInt(read('adults'), 2, MAX_ADULTS_PER_SEARCH), 1),
-    children: toInt(read('children'), 0, MAX_CHILDREN_PER_SEARCH),
-    rooms: Math.max(toInt(read('rooms'), 1, MAX_ROOMS_PER_SEARCH), 1),
-  };
 }

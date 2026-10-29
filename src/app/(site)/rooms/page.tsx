@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { BedDouble } from 'lucide-react';
 
-import { BookingSearch, criteriaFromParams, criteriaToParams } from '@/components/site/booking-search';
+import { BookingSearch } from '@/components/site/booking-search';
+import { criteriaFromParams, criteriaToParams } from '@/lib/domain/search-criteria';
 import { PageIntro } from '@/components/site/page-intro';
 import { PageView } from '@/components/site/page-view';
 import { RoomCard } from '@/components/site/room-card';

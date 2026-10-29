@@ -4,7 +4,8 @@ import { notFound } from 'next/navigation';
 import { ArrowRight, BedDouble, Clock, Maximize2, ShieldCheck, Users } from 'lucide-react';
 
 import { AmenityIcon } from '@/components/site/amenity-icon';
-import { BookingSearch, criteriaFromParams, criteriaToParams } from '@/components/site/booking-search';
+import { BookingSearch } from '@/components/site/booking-search';
+import { criteriaFromParams, criteriaToParams } from '@/lib/domain/search-criteria';
 import { PageIntro } from '@/components/site/page-intro';
 import { PageView } from '@/components/site/page-view';
 import { PriceDisplay, PriceLine } from '@/components/site/price-display';
