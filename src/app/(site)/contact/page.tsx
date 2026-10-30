@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import { ContactChannelButtons } from '@/components/site/contact-links';
+import { ContactChannelCards } from '@/components/site/contact-links';
 import { ContactForm } from '@/components/site/contact-form';
 import { PageIntro } from '@/components/site/page-intro';
 import { Card, DemoBadge, Section } from '@/components/ui/surface';
@@ -36,7 +36,7 @@ export default async function ContactPage() {
               kanal hozircha ulanmagan.
             </p>
 
-            <ContactChannelButtons settings={settings} className="mt-5" size="lg" />
+            <ContactChannelCards settings={settings} className="mt-5" />
 
             {settings.isDemoData ? (
               <Card tone="sand" className="mt-6 flex flex-wrap items-center gap-3 p-4">
