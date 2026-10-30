@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { MapPin, Navigation } from 'lucide-react';
 
-import { ContactChannelButtons } from '@/components/site/contact-links';
+import { ContactChannelCards } from '@/components/site/contact-links';
 import { MediaImage } from '@/components/site/media-image';
 import { PageIntro } from '@/components/site/page-intro';
 import { Button } from '@/components/ui/button';
@@ -71,7 +71,7 @@ export default async function LocationPage() {
 
             <div className="mt-7">
               <h3 className="font-display text-xl text-chocolate-800">Bogʻlanish</h3>
-              <ContactChannelButtons settings={settings} className="mt-3" />
+              <ContactChannelCards settings={settings} className="mt-3" />
             </div>
 
             {mapsHref ? (
@@ -100,14 +100,14 @@ export default async function LocationPage() {
 
           <div className="space-y-4">
             <MediaImage
-              asset={media.get('media-exterior-dusk') ?? null}
+              asset={media.get('media-exterior-registan') ?? null}
               sizes="(min-width: 1024px) 560px, 100vw"
               aspect="4 / 3"
               className="rounded-xl shadow-[var(--shadow-card)]"
               showIllustrationNote
             />
             <MediaImage
-              asset={media.get('media-detail-arch') ?? null}
+              asset={media.get('media-detail-mosaic') ?? null}
               sizes="(min-width: 1024px) 560px, 100vw"
               aspect="16 / 9"
               className="rounded-xl shadow-[var(--shadow-card)]"

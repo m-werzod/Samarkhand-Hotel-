@@ -66,7 +66,7 @@ export default async function AmenitiesPage() {
       <Section tone="sand">
         <div className="container-content grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
           <MediaImage
-            asset={media.get('media-restaurant') ?? null}
+            asset={media.get('media-breakfast-buffet') ?? null}
             sizes="(min-width: 1024px) 560px, 100vw"
             aspect="4 / 3"
             className="rounded-xl shadow-[var(--shadow-card)]"

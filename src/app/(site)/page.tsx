@@ -59,7 +59,7 @@ export default async function HomePage() {
     : null;
   const featuredRooms = roomsWithPricing.slice(0, 3);
   const galleryPreview = gallery.slice(0, 6);
-  const aboutMedia = mediaIndex.get('media-lobby-reception') ?? null;
+  const aboutMedia = mediaIndex.get('media-lobby-lounge') ?? null;
 
   return (
     <>

@@ -1,4 +1,4 @@
-import manifest from '@/lib/media-manifest.json';
+import manifest from '@/lib/photo-manifest.json';
 import type {
   Amenity,
   Campaign,
@@ -42,15 +42,20 @@ interface ManifestEntry {
 }
 
 /**
- * Media records are derived from the generated manifest so the library can
+ * Media records are derived from the download manifest so the library can
  * never drift from the files actually on disk.
+ *
+ * These are real photographs under the Pexels licence, not of this property.
+ * They are marked `kind: 'photograph'` because that is what they are — the
+ * caveat that belongs on them is "not this hotel", which the demo-data flag
+ * on settings already carries site-wide.
  */
-export const seedMedia: MediaAsset[] = (manifest.media as ManifestEntry[]).map(
+export const seedMedia: MediaAsset[] = (manifest.photos as ManifestEntry[]).map(
   (entry, index) => ({
-    id: `media-${entry.path.replace('/media/', '').replace('.svg', '')}`,
+    id: `media-${entry.path.replace('/photos/', '').replace('.jpg', '')}`,
     storagePath: entry.path,
     type: entry.type === 'video' ? 'video' : 'image',
-    kind: entry.kind === 'photograph' ? 'photograph' : 'illustration',
+    kind: entry.kind === 'illustration' ? 'illustration' : 'photograph',
     category: entry.category as MediaCategory,
     altText: entry.alt,
     caption: entry.caption,
@@ -200,7 +205,11 @@ export const seedRooms: Room[] = [
       'amenity-safe',
       'amenity-desk',
     ],
-    mediaIds: [mediaId('room-standard'), mediaId('bathroom'), mediaId('detail-arch')],
+    mediaIds: [
+      mediaId('room-standard'),
+      mediaId('bathroom-marble'),
+      mediaId('room-detail'),
+    ],
     createdAt: now,
     updatedAt: now,
   },
@@ -236,7 +245,7 @@ export const seedRooms: Room[] = [
     ],
     mediaIds: [
       mediaId('room-deluxe'),
-      mediaId('bathroom'),
+      mediaId('bathroom-tub'),
       mediaId('detail-tilework'),
     ],
     createdAt: now,
@@ -276,8 +285,8 @@ export const seedRooms: Room[] = [
     ],
     mediaIds: [
       mediaId('room-suite'),
-      mediaId('bathroom'),
-      mediaId('lobby-reception'),
+      mediaId('bathroom-tub'),
+      mediaId('lobby-lounge'),
     ],
     createdAt: now,
     updatedAt: now,
@@ -312,7 +321,11 @@ export const seedRooms: Room[] = [
       'amenity-parking',
       'amenity-desk',
     ],
-    mediaIds: [mediaId('room-deluxe'), mediaId('room-standard'), mediaId('bathroom')],
+    mediaIds: [
+      mediaId('room-family'),
+      mediaId('room-detail'),
+      mediaId('bathroom-marble'),
+    ],
     createdAt: now,
     updatedAt: now,
   },
@@ -384,7 +397,7 @@ export const seedCampaigns: Campaign[] = [
       'Sentyabrdan noyabrgacha — shaharning eng tiniq havosi va eng sokin kunlari.',
     badge: 'Mavsumiy',
     mediaId: mediaId('campaign-autumn'),
-    mobileMediaId: mediaId('campaign-autumn-mobile'),
+    mobileMediaId: null,
     ctaLabel: 'Xonalarni koʻrish',
     ctaHref: '/rooms',
     offerId: null,
@@ -404,7 +417,7 @@ export const seedCampaigns: Campaign[] = [
     subtitle: 'Uch kecha va undan koʻp qolishda chegirma avtomatik qoʻllanadi.',
     badge: '15% chegirma',
     mediaId: mediaId('campaign-earlybird'),
-    mobileMediaId: mediaId('campaign-earlybird-mobile'),
+    mobileMediaId: null,
     ctaLabel: 'Takliflarni koʻrish',
     ctaHref: '/offers',
     offerId: 'offer-early-bird',
@@ -424,7 +437,7 @@ export const seedCampaigns: Campaign[] = [
     subtitle: 'Juma va shanba kechalari uchun lyuks xonada maxsus taklif.',
     badge: 'Lyuks',
     mediaId: mediaId('campaign-weekend'),
-    mobileMediaId: mediaId('campaign-weekend-mobile'),
+    mobileMediaId: null,
     ctaLabel: 'Lyuks xonani koʻrish',
     ctaHref: '/rooms/lyuks-xona',
     offerId: 'offer-suite-welcome',
@@ -489,7 +502,7 @@ export const seedSiteContent: SiteContent = {
   heroHeadline: 'Samarqandda uyingizdek kutib olamiz',
   heroSubheadline:
     'Shahar markazidagi sokin mehmonxona: keng xonalar, iliq nonushta va har bir mehmonni ismi bilan taniydigan jamoa.',
-  heroMediaId: mediaId('exterior-dusk'),
+  heroMediaId: mediaId('hero-samarkand-twilight'),
   heroVideoUrl: null,
   aboutTitle: 'Mehmondoʻstlik — bizning kasbimiz emas, odatimiz',
   aboutBody:
