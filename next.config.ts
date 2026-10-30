@@ -67,9 +67,9 @@ const nextConfig: NextConfig = {
     return [
       { source: '/:path*', headers: securityHeaders },
       {
-        // Generated brand/media assets are content-addressed by filename and
-        // safe to cache aggressively.
-        source: '/media/:path*',
+        // Brand and photography assets are stable by filename and safe to
+        // cache aggressively.
+        source: '/photos/:path*',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],

@@ -86,10 +86,33 @@ describe('seed integrity', () => {
     expect(testimonials.every((t) => t.isSample)).toBe(true);
   });
 
-  it('labels every bundled media asset as an illustration, not a photograph', async () => {
+  it('labels the bundled media honestly about what it is', async () => {
     const media = await store.listMedia();
     expect(media.length).toBeGreaterThan(0);
-    expect(media.every((asset) => asset.kind === 'illustration')).toBe(true);
+
+    // The library ships real licensed photography, so `photograph` is the
+    // accurate label. What these are *not* is pictures of this property —
+    // that caveat rides on the settings demo flag, which is asserted above,
+    // rather than by mislabelling a photograph as an illustration.
+    expect(media.every((asset) => asset.kind === 'photograph')).toBe(true);
+
+    // Every asset must still declare a kind the UI knows how to mark.
+    expect(
+      media.every((asset) => ['photograph', 'illustration'].includes(asset.kind)),
+    ).toBe(true);
+  });
+
+  it('covers every category the gallery offers a filter for', async () => {
+    const [media, content] = await Promise.all([
+      store.listMedia(),
+      store.getSiteContent(),
+    ]);
+
+    // A filter chip that always yields an empty grid is a dead control.
+    for (const category of content.galleryCategories) {
+      const matching = media.filter((asset) => asset.category === category.key);
+      expect(matching.length, `no media in category "${category.key}"`).toBeGreaterThan(0);
+    }
   });
 
   it('gives every media asset meaningful alt text', async () => {

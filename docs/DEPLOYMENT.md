@@ -63,7 +63,7 @@ The script is idempotent — safe to re-run.
 
 ### Upload the artwork
 
-Generated SVGs live in `public/media/` and are served from the app itself, so
+Licensed photography lives in `public/photos/` and is served from the app itself, so
 nothing needs uploading to get started. Once you have real photography, upload
 it through **Admin → Media** and set each asset's kind to `photograph`.
 
