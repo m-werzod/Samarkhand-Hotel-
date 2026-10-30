@@ -19,7 +19,8 @@
     "assets:generate": "node scripts/generate-assets.mjs",
     "admin:hash": "node scripts/hash-password.mjs",
     "db:seed": "node scripts/seed-supabase.mjs",
-    "verify": "npm run typecheck && npm run lint && npm run test && npm run build"
+    "verify": "npm run typecheck && npm run lint && npm run test && npm run build",
+    "photos:fetch": "node scripts/fetch-photos.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "3.9.1",
