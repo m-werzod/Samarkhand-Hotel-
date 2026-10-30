@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, BedDouble } from 'lucide-react';
+import { ArrowRight, BedDouble, Star } from 'lucide-react';
 
 import { BookingSearch } from '@/components/site/booking-search';
 import { MediaImage } from '@/components/site/media-image';
@@ -9,19 +9,19 @@ import type { HotelSettings, MediaAsset, SiteContent } from '@/lib/domain/types'
 /**
  * The homepage hero.
  *
- * Three decisions worth naming:
+ * Layout decisions worth naming:
  *
- *  - It is an image, not a video. A full-bleed background video is the
- *    single most expensive thing a hotel site can put above the fold on a
- *    phone, and most of the audience arrives on one. When the hotel
- *    configures `heroVideoUrl`, a "watch" affordance appears instead — the
- *    video is something a guest opts into, never something they must sit
- *    through.
- *  - The booking widget is inside the hero on desktop and immediately below
- *    it on mobile, so the primary action is reachable without scrolling on
- *    either.
- *  - The scrim is a gradient rather than a flat tint, so the artwork stays
- *    visible at the top while the text at the bottom keeps its contrast.
+ *  - **The text block is constrained and bottom-anchored**, with the scrim
+ *    strongest exactly where the copy sits. Centring a headline over a
+ *    photograph puts it wherever the photograph's busiest region happens to
+ *    be; anchoring it low keeps it over the darkest, calmest part of almost
+ *    any image.
+ *  - **The search panel overlaps the hero on desktop** and clears it on
+ *    mobile, where overlapping would eat the headline.
+ *  - **It is a photograph, not a video.** A full-bleed background video is
+ *    the most expensive thing a hotel site can put above the fold on a phone,
+ *    and most of this audience arrives on one. A configured `heroVideoUrl`
+ *    becomes an opt-in affordance instead.
  */
 export function Hero({
   content,
@@ -32,9 +32,13 @@ export function Hero({
   settings: HotelSettings;
   heroMedia: MediaAsset | null;
 }) {
+  const location = [settings.address.city, settings.address.country]
+    .filter(Boolean)
+    .join(' · ');
+
   return (
     <section className="relative isolate" aria-labelledby="hero-title">
-      <div className="relative min-h-[32rem] sm:min-h-[36rem] lg:min-h-[44rem]">
+      <div className="relative min-h-[34rem] sm:min-h-[38rem] lg:min-h-[46rem]">
         <div className="absolute inset-0 -z-10">
           <MediaImage
             asset={heroMedia}
@@ -44,35 +48,51 @@ export function Hero({
             className="size-full"
             imageClassName="object-cover"
           />
-          <div className="media-scrim absolute inset-0" aria-hidden="true" />
+          {/*
+            Two layers rather than one: a bottom-weighted gradient that carries
+            the text, plus a light top wash so the fixed header's white logo
+            and links stay legible against a bright sky.
+          */}
+          <div
+            className="absolute inset-0 bg-gradient-to-t from-chocolate-900/92 via-chocolate-900/45 to-transparent"
+            aria-hidden="true"
+          />
+          <div
+            className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-chocolate-900/55 to-transparent"
+            aria-hidden="true"
+          />
         </div>
 
-        <div className="container-content flex min-h-[32rem] flex-col justify-end pb-10 pt-28 sm:min-h-[36rem] sm:pb-14 lg:min-h-[44rem] lg:pb-20 lg:pt-36">
-          <div className="max-w-2xl">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-gold-300">
-              {settings.address.city}
-              {settings.address.country ? ` · ${settings.address.country}` : ''}
+        <div className="container-content flex min-h-[34rem] flex-col justify-end pb-12 pt-28 sm:min-h-[38rem] sm:pb-16 lg:min-h-[46rem] lg:pb-24 lg:pt-36">
+          <div className="max-w-3xl">
+            <p className="mb-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-gold-300">
+              <span className="inline-flex items-center gap-1.5">
+                <Star className="size-3.5 fill-gold-400 text-gold-400" aria-hidden="true" />
+                Boutique
+              </span>
+              <span className="h-3 w-px bg-gold-300/40" aria-hidden="true" />
+              <span>{location}</span>
             </p>
 
             <h1
               id="hero-title"
-              className="text-4xl leading-[1.08] text-ivory-50 sm:text-5xl lg:text-6xl"
+              className="text-[2.5rem] leading-[1.06] text-ivory-50 sm:text-6xl lg:text-7xl"
             >
               {content.heroHeadline}
             </h1>
 
-            <p className="mt-4 max-w-xl text-base leading-relaxed text-ivory-100/85 sm:text-lg">
+            <p className="mt-5 max-w-xl text-base leading-relaxed text-ivory-100/85 sm:text-lg">
               {content.heroSubheadline}
             </p>
 
-            <div className="mt-7 flex flex-wrap gap-3">
-              <Button asChild size="lg">
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Button asChild size="xl">
                 <Link href="/booking">
                   Xona bron qilish
                   <ArrowRight aria-hidden="true" />
                 </Link>
               </Button>
-              <Button asChild variant="onDark" size="lg">
+              <Button asChild variant="onDark" size="xl">
                 <Link href="/rooms">
                   <BedDouble aria-hidden="true" />
                   Xonalarni koʻrish
@@ -83,11 +103,7 @@ export function Hero({
         </div>
       </div>
 
-      {/*
-        The search panel overlaps the hero on desktop and sits below it on
-        mobile, where overlapping would eat the headline.
-      */}
-      <div className="container-content relative z-10 -mt-px lg:-mt-16">
+      <div className="container-content relative z-10 -mt-px lg:-mt-20">
         <BookingSearch timeZone={settings.timeZone} />
       </div>
     </section>

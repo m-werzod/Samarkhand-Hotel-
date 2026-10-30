@@ -260,6 +260,16 @@ function CampaignSlide({
           className={cn('absolute inset-0', OVERLAY_CLASS[campaign.overlay])}
           aria-hidden="true"
         />
+        {/*
+          A bottom-weighted gradient on top of the flat overlay. The flat tint
+          alone has to be heavy enough for the brightest part of a photograph,
+          which dulls the whole image; this darkens only the band the copy
+          actually sits in and leaves the rest of the picture alone.
+        */}
+        <div
+          className="absolute inset-0 bg-gradient-to-t from-chocolate-900/85 via-chocolate-900/25 to-transparent"
+          aria-hidden="true"
+        />
 
         <div
           className={cn(

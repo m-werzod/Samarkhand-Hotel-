@@ -101,7 +101,7 @@ export function RoomCard({
         </dl>
 
         {topAmenities.length > 0 ? (
-          <ul className="mt-4 flex flex-wrap gap-2">
+          <ul className="mb-5 mt-4 flex flex-wrap gap-2">
             {topAmenities.map((amenity) => (
               <li
                 key={amenity.id}
@@ -119,7 +119,13 @@ export function RoomCard({
           </ul>
         ) : null}
 
-        <div className="mt-5 flex items-end justify-between gap-3 border-t border-sand-200 pt-4">
+        {/*
+          `mt-auto` pins the price and action to the bottom of the card. Room
+          types carry different numbers of amenity chips, so without it the
+          price sits at a different height on every card in the row and the
+          grid reads as ragged.
+        */}
+        <div className="mt-auto flex items-end justify-between gap-3 border-t border-sand-200 pt-4">
           <div>
             <PriceDisplay price={price} size="md" />
             {room.isDemoData ? <DemoBadge className="mt-1.5" /> : null}
